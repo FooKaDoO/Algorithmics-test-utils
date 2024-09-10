@@ -18,3 +18,7 @@ crate-type = ["cdylib"]
 pyo3 = { version = "0.21.2", features = ["extension-module"] }
 rand = "0.8.5"
 
+[tool.maturin]
+features = ["pyo3/extension-module"]
+compatibility = "linux"
+sdist-include = ["README.md"]
