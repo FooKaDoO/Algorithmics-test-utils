@@ -8,14 +8,11 @@ name: CI
 on:
   push:
     branches:
-      - release
+      - main
+      - master
     tags:
       - '*'
   pull_request:
-    branches:
-      - release
-    tags:
-      - '*'
   workflow_dispatch:
 
 permissions:
