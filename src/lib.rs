@@ -1,6 +1,6 @@
+use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
-use pyo3::types::PyFunction;
-use pyo3::types::PyDict;
+use pyo3::types::{PyDict, PyTuple};
 use pyo3::wrap_pyfunction;
 use rand::Rng;
 use std::time::Instant;
@@ -19,23 +19,25 @@ fn generate_list(size: usize, range_start: i32, range_end: i32) -> PyResult<Vec<
 
 /// Timing function
 #[pyfunction]
-#[pyo3(signature = (repeat, func, **kwargs))]
-fn time_function(py: Python, repeat: u128, func: Py<PyFunction>, kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<u128> {
-
-    let mut total: u128 = 0;
-
-    for _ in 0..repeat {
-        let now: Instant = Instant::now();
-        func.call_bound(py, (), kwargs)?;
-        total += now.elapsed().as_millis();
+#[pyo3(signature = (repeat, func, *args, **kwargs))]
+fn time_function(repeat: u128, func: &Bound<'_, PyAny>, args: &Bound<'_, PyTuple>, kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<u128> {
+    if !func.is_callable() {
+        Err(PyTypeError::new_err("Parameter 'func' should be callable."))
+    } else {    
+        let mut total: u128 = 0;
+        for _ in 0..repeat {
+            let now: Instant = Instant::now();
+            func.call(args, kwargs)?;
+            total += now.elapsed().as_millis();
+        }
+        let average: u128 = total / repeat;
+        Ok(average)
     }
-    let average: u128 = total / repeat;
-    Ok(average)
 }
 
 /// A Python module implemented in Rust with random OS things.
 #[pymodule]
-fn algo_utils(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn algorithmics_utils(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(generate_list, m)?)?;
     m.add_function(wrap_pyfunction!(time_function, m)?)?;
     Ok(())
