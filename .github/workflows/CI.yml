@@ -130,6 +130,8 @@ jobs:
     environment: release
     permissions:
       id-token: write
+    env:
+      MATURIN_PYPI_TOKEN: ${{ secrets.ALGO_UTILS_KEY }}
     steps:
       - uses: actions/download-artifact@v4
       - name: Publish to PyPI
