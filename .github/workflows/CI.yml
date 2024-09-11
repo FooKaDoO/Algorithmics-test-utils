@@ -131,7 +131,7 @@ jobs:
     permissions:
       id-token: write
     env:
-      MATURIN_PYPI_TOKEN: ${{ secrets.ALGO_UTILS_KEY }}
+      MATURIN_PYPI_TOKEN: ${{ secrets.ALGO_API_TOKEN }}
     steps:
       - uses: actions/download-artifact@v4
       - name: Publish to PyPI
